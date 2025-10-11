@@ -170,12 +170,6 @@ Content-Type: application/json
 
 本项目采用MIT许可证 - 详见 [LICENSE](LICENSE) 文件
 
-## 联系信息
-
-- 项目维护者：[Your Name]
-- 邮箱：[email@example.com]
-- 问题反馈：[GitHub Issues]
-
 ## 致谢
 
 感谢所有为神经康复研究做出贡献的医疗专家和研究人员。

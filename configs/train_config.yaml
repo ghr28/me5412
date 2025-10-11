@@ -1,0 +1,98 @@
+# 训练配置文件
+# 用于配置模型训练参数
+
+# 数据设置
+data:
+  raw_data_path: "data/raw"
+  processed_data_path: "data/processed"
+  synthetic_data_path: "data/synthetic"
+  sequence_length: 100
+  feature_dim: 6
+  train_split: 0.7
+  val_split: 0.15
+  test_split: 0.15
+
+# 模型设置
+model:
+  type: "hybrid"  # 可选: "tcn", "transformer", "hybrid"
+  
+  # TCN配置
+  tcn:
+    num_channels: [64, 64, 128, 128]
+    kernel_size: 3
+    dropout: 0.2
+  
+  # Transformer配置
+  transformer:
+    d_model: 128
+    num_heads: 8
+    num_layers: 4
+    dropout: 0.1
+  
+  # 混合模型配置
+  hybrid:
+    tcn_channels: [64, 128]
+    d_model: 128
+    num_heads: 8
+    num_transformer_layers: 2
+    dropout: 0.2
+
+# 训练设置
+training:
+  epochs: 100
+  batch_size: 32
+  learning_rate: 0.001
+  weight_decay: 0.0001
+  patience: 10
+  save_best_model: true
+  
+  # 学习率调度
+  scheduler:
+    type: "ReduceLROnPlateau"
+    mode: "min"
+    patience: 5
+    factor: 0.5
+
+# 合成数据生成设置
+synthetic:
+  gan:
+    latent_dim: 100
+    hidden_dim: 128
+    epochs: 1000
+    batch_size: 32
+    learning_rate: 0.0002
+    beta1: 0.5
+    beta2: 0.999
+  
+  vae:
+    latent_dim: 32
+    hidden_dim: 128
+    epochs: 1000
+    batch_size: 32
+    learning_rate: 0.001
+    kl_weight: 0.001
+
+# 疾病类别设置
+diseases:
+  healthy: 0
+  parkinsons: 1
+  cerebral_palsy: 2
+  stroke: 3
+
+# 评估设置
+evaluation:
+  metrics: ["accuracy", "precision", "recall", "f1_score"]
+  cross_validation: 5
+  
+# 部署设置
+deployment:
+  model_save_path: "models"
+  reports_path: "reports"
+  max_file_size: 16  # MB
+  supported_formats: ["csv", "xlsx", "json"]
+
+# 日志设置
+logging:
+  level: "INFO"
+  format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+  file: "logs/training.log"

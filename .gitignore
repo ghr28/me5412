@@ -1,0 +1,67 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+.venv/
+ENV/
+env.bak/
+venv.bak/
+.conda/
+
+# PyTorch models
+*.pth
+*.pt
+best_model.pth
+
+# Data files
+data/raw/*
+data/processed/*
+!data/raw/.gitkeep
+!data/processed/.gitkeep
+
+# Large synthetic data files (keep small samples)
+data/synthetic/*.npy
+!data/synthetic/demo_synth_data.npy
+!data/synthetic/demo_synth_labels.npy
+
+# Logs
+logs/
+*.log
+
+# Reports and outputs
+reports/
+evaluation_plots/
+*.html
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Temporary files
+*.tmp
+*.temp
+
+# Model outputs and results
+models/*.pth
+models/*.json
+!models/demo_results.json
+
+# Environment variables
+.env
+
+# Flask uploads
+data/uploads/*
+!data/uploads/.gitkeep

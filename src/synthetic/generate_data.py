@@ -558,7 +558,17 @@ class SyntheticDataGenerator:
 
 
 def create_sample_training_data():
-    """创建示例训练数据"""
+    """
+    创建示例训练数据 - 统一相对运动幅度模型
+    
+    已改进为统一的6维相对运动幅度模型：
+    - 维度1-2: 左腿前后/左右运动
+    - 维度3: 左腿垂直运动  
+    - 维度4-5: 右腿前后/左右运动
+    - 维度6: 右腿垂直运动
+    
+    所有维度均为标准化的相对运动幅度[-1,1]，消除了原始混合物理量的问题
+    """
     # 生成多种疾病类型的模拟数据
     conditions = ['healthy', 'parkinsons', 'cerebral_palsy', 'stroke']
     all_data = []
@@ -570,44 +580,46 @@ def create_sample_training_data():
             t = np.linspace(0, 1, 100)
             
             if condition == 'healthy':
-                # 健康步态：规律、对称
+                # 健康步态：规律、对称相对运动幅度
                 signal = np.column_stack([
-                    np.sin(2 * np.pi * t) + 0.1 * np.random.randn(100),
-                    np.sin(2 * np.pi * t + np.pi) + 0.1 * np.random.randn(100),
-                    0.5 * np.sin(4 * np.pi * t) + 0.05 * np.random.randn(100),
-                    0.5 * np.sin(4 * np.pi * t + np.pi) + 0.05 * np.random.randn(100),
-                    0.3 * np.cos(2 * np.pi * t) + 0.05 * np.random.randn(100),
-                    9.8 + 0.2 * np.sin(2 * np.pi * t) + 0.1 * np.random.randn(100)
+                    np.sin(2 * np.pi * t) + 0.05 * np.random.randn(100),           # 左腿前后
+                    np.sin(2 * np.pi * t + np.pi) + 0.05 * np.random.randn(100),   # 左腿左右
+                    0.5 * np.sin(4 * np.pi * t) + 0.03 * np.random.randn(100),     # 左腿垂直
+                    np.sin(2 * np.pi * t + np.pi) + 0.05 * np.random.randn(100),   # 右腿前后
+                    np.sin(2 * np.pi * t) + 0.05 * np.random.randn(100),           # 右腿左右
+                    0.5 * np.sin(4 * np.pi * t + np.pi) + 0.03 * np.random.randn(100)  # 右腿垂直
                 ])
             elif condition == 'parkinsons':
-                # 帕金森：步幅减小、不规律
+                # 帕金森：步幅减小、震颤、相对运动幅度
+                tremor = 0.15 * np.sin(20 * np.pi * t)  # 震颤成分
                 signal = np.column_stack([
-                    0.7 * np.sin(2 * np.pi * t) + 0.2 * np.random.randn(100),
-                    0.7 * np.sin(2 * np.pi * t + np.pi) + 0.2 * np.random.randn(100),
-                    0.3 * np.sin(4 * np.pi * t) + 0.1 * np.random.randn(100),
-                    0.3 * np.sin(4 * np.pi * t + np.pi) + 0.1 * np.random.randn(100),
-                    0.2 * np.cos(2 * np.pi * t) + 0.1 * np.random.randn(100),
-                    9.8 + 0.1 * np.sin(2 * np.pi * t) + 0.15 * np.random.randn(100)
+                    0.7 * np.sin(2 * np.pi * t) + tremor + 0.1 * np.random.randn(100),      # 左腿前后
+                    0.7 * np.sin(2 * np.pi * t + np.pi) + tremor + 0.1 * np.random.randn(100),  # 左腿左右
+                    0.35 * np.sin(4 * np.pi * t) + 0.5 * tremor + 0.08 * np.random.randn(100),  # 左腿垂直
+                    0.7 * np.sin(2 * np.pi * t + np.pi) + tremor + 0.1 * np.random.randn(100),  # 右腿前后
+                    0.7 * np.sin(2 * np.pi * t) + tremor + 0.1 * np.random.randn(100),      # 右腿左右
+                    0.35 * np.sin(4 * np.pi * t + np.pi) + 0.5 * tremor + 0.08 * np.random.randn(100)  # 右腿垂直
                 ])
             elif condition == 'cerebral_palsy':
-                # 脑瘫：不对称、痉挛性
+                # 脑瘫：不对称、痉挛性相对运动幅度
+                spasticity = 0.2 * np.sin(6 * np.pi * t)  # 痉挛成分
                 signal = np.column_stack([
-                    np.sin(2 * np.pi * t) + 0.3 * np.sin(6 * np.pi * t) + 0.2 * np.random.randn(100),
-                    0.6 * np.sin(2 * np.pi * t + np.pi) + 0.2 * np.random.randn(100),
-                    0.4 * np.sin(4 * np.pi * t) + 0.2 * np.sin(8 * np.pi * t) + 0.1 * np.random.randn(100),
-                    0.3 * np.sin(4 * np.pi * t + np.pi) + 0.1 * np.random.randn(100),
-                    0.4 * np.cos(2 * np.pi * t) + 0.1 * np.cos(6 * np.pi * t) + 0.1 * np.random.randn(100),
-                    9.8 + 0.3 * np.sin(2 * np.pi * t) + 0.2 * np.random.randn(100)
+                    np.sin(2 * np.pi * t) + spasticity + 0.15 * np.random.randn(100),       # 左腿前后
+                    0.6 * np.sin(2 * np.pi * t + np.pi) + 0.1 * np.random.randn(100),      # 左腿左右(不对称)
+                    0.4 * np.sin(4 * np.pi * t) + 0.15 * np.sin(8 * np.pi * t) + 0.1 * np.random.randn(100),  # 左腿垂直
+                    0.8 * np.sin(2 * np.pi * t + np.pi) + 0.7 * spasticity + 0.15 * np.random.randn(100),  # 右腿前后
+                    0.4 * np.sin(2 * np.pi * t) + 0.1 * np.random.randn(100),              # 右腿左右(严重不对称)
+                    0.3 * np.sin(4 * np.pi * t + np.pi) + 0.1 * np.random.randn(100)       # 右腿垂直
                 ])
             else:  # stroke
-                # 脑卒中：一侧偏瘫
+                # 脑卒中：偏瘫相对运动幅度
                 signal = np.column_stack([
-                    0.8 * np.sin(2 * np.pi * t) + 0.15 * np.random.randn(100),
-                    0.4 * np.sin(2 * np.pi * t + np.pi) + 0.3 * np.random.randn(100),
-                    0.4 * np.sin(4 * np.pi * t) + 0.1 * np.random.randn(100),
-                    0.2 * np.sin(4 * np.pi * t + np.pi) + 0.2 * np.random.randn(100),
-                    0.3 * np.cos(2 * np.pi * t) + 0.1 * np.random.randn(100),
-                    9.8 + 0.25 * np.sin(2 * np.pi * t) + 0.15 * np.random.randn(100)
+                    0.8 * np.sin(2 * np.pi * t) + 0.08 * np.random.randn(100),              # 左腿前后(健侧)
+                    0.8 * np.sin(2 * np.pi * t + np.pi) + 0.08 * np.random.randn(100),      # 左腿左右(健侧)
+                    0.4 * np.sin(4 * np.pi * t) + 0.06 * np.random.randn(100),              # 左腿垂直(健侧)
+                    0.3 * np.sin(2 * np.pi * t + np.pi) + 0.2 * np.random.randn(100),       # 右腿前后(患侧)
+                    0.2 * np.sin(2 * np.pi * t) + 0.25 * np.random.randn(100),              # 右腿左右(患侧)
+                    0.15 * np.sin(4 * np.pi * t + np.pi) + 0.15 * np.random.randn(100)      # 右腿垂直(患侧)
                 ])
             
             all_data.append(signal)
